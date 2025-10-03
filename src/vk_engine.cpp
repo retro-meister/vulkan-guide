@@ -73,6 +73,12 @@ void VulkanEngine::run()
                     stop_rendering = false;
                 }
             }
+
+            if (e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_ESCAPE) {
+                    bQuit = true;
+                }
+            }
         }
 
         // do not draw if we are minimized
