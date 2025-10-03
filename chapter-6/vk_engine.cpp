@@ -463,15 +463,22 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd)
     GPUSceneData* sceneUniformData = (GPUSceneData*)gpuSceneDataBuffer.allocation->GetMappedData();
     *sceneUniformData = sceneData;
 
+    //create a descriptor set that binds that buffer and update it
+    VkDescriptorSet globalDescriptor;
+    
+    #ifdef __APPLE__
+    // On macOS/Metal, use fixed descriptor count allocation
+    globalDescriptor = get_current_frame()._frameDescriptors.allocate(_device, _gpuSceneDataDescriptorLayout);
+    #else
+    // On other platforms, use variable descriptor count allocation
     VkDescriptorSetVariableDescriptorCountAllocateInfo allocArrayInfo{.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO, .pNext = nullptr};
    
-    uint32_t descriptorCounts =texCache.Cache.size();
+    uint32_t descriptorCounts = texCache.Cache.size();
     allocArrayInfo.pDescriptorCounts = &descriptorCounts;
     allocArrayInfo.descriptorSetCount = 1;
 
-
-    //create a descriptor set that binds that buffer and update it
-    VkDescriptorSet globalDescriptor = get_current_frame()._frameDescriptors.allocate(_device, _gpuSceneDataDescriptorLayout, &allocArrayInfo);
+    globalDescriptor = get_current_frame()._frameDescriptors.allocate(_device, _gpuSceneDataDescriptorLayout, &allocArrayInfo);
+    #endif
 
 	DescriptorWriter writer;
 	writer.write_buffer(0, gpuSceneDataBuffer.buffer, sizeof(GPUSceneData), 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
@@ -1194,17 +1201,24 @@ void VulkanEngine::init_descriptors()
         builder.add_binding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
         builder.add_binding(1,VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 
-       
+        // Check if we're on macOS/Metal to avoid variable descriptor count issues
+        #ifdef __APPLE__
+        // On macOS/Metal, use a fixed descriptor count to avoid SPIR-V to MSL conversion issues
+        builder.bindings[1].descriptorCount = 1024; // Fixed count for Metal compatibility
+        _gpuSceneDataDescriptorLayout = builder.build(_device, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+        #else
+        // On other platforms, use variable descriptor counts for better memory efficiency
         VkDescriptorSetLayoutBindingFlagsCreateInfo bindFlags = {.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO, .pNext = nullptr};
 
         std::array<VkDescriptorBindingFlags,2> flagArray { 0,VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT  };
        
-       builder.bindings[1].descriptorCount = 4048;
+        builder.bindings[1].descriptorCount = 4048;
 
-       bindFlags.bindingCount = 2;
-       bindFlags.pBindingFlags = flagArray.data();
+        bindFlags.bindingCount = 2;
+        bindFlags.pBindingFlags = flagArray.data();
 
         _gpuSceneDataDescriptorLayout = builder.build(_device, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, &bindFlags);
+        #endif
     }
 
     _mainDeletionQueue.push_function([&]() {
