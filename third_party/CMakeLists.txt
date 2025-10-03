@@ -28,7 +28,7 @@ target_sources(tinyobjloader PRIVATE
 target_include_directories(tinyobjloader PUBLIC tinyobjloader)
 
 
-find_package(SDL2 REQUIdRED)
+find_package(SDL2 REQUIRED)
 
 add_library(imgui STATIC)
 
