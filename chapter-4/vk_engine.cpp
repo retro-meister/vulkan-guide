@@ -517,13 +517,13 @@ void VulkanEngine::init_sync_structures()
 void VulkanEngine::init_pipelines()
 {
 	VkShaderModule colorMeshShader;
-	if (!load_shader_module("../../shaders/default_lit.frag.spv", &colorMeshShader))
+	if (!load_shader_module("shaders/default_lit.frag.spv", &colorMeshShader))
 	{
 		std::cout << "Error when building the colored mesh shader" << std::endl;
 	}
 
 	VkShaderModule meshVertShader;
-	if (!load_shader_module("../../shaders/tri_mesh_ssbo.vert.spv", &meshVertShader))
+	if (!load_shader_module("shaders/tri_mesh_ssbo.vert.spv", &meshVertShader))
 	{
 		std::cout << "Error when building the mesh vertex shader module" << std::endl;
 	}
@@ -742,7 +742,7 @@ void VulkanEngine::load_meshes()
 
 	//load the monkey
 	Mesh monkeyMesh{};
-	monkeyMesh.load_from_obj("../../assets/monkey_smooth.obj");
+	monkeyMesh.load_from_obj("assets/monkey_smooth.obj");
 
 	upload_mesh(triMesh);
 	upload_mesh(monkeyMesh);

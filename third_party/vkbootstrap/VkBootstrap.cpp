@@ -615,6 +615,15 @@ detail::Result<Instance> InstanceBuilder::build () const {
 		extensions.push_back (VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
 
+	// On macOS, automatically enable portability enumeration
+	VkInstanceCreateFlags instance_flags = info.flags;
+#if defined(__APPLE__)
+	if (detail::check_extension_supported (system.available_extensions, "VK_KHR_portability_enumeration")) {
+		extensions.push_back ("VK_KHR_portability_enumeration");
+		instance_flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+	}
+#endif
+
 	if (!info.headless_context) {
 		auto check_add_window_ext = [&] (const char* name) -> bool {
 			if (!detail::check_extension_supported (system.available_extensions, name))
@@ -634,7 +643,7 @@ detail::Result<Instance> InstanceBuilder::build () const {
         added_window_exts = check_add_window_ext ("VK_KHR_xlib_surface") || added_window_exts;
         added_window_exts = check_add_window_ext ("VK_KHR_wayland_surface") || added_window_exts;
 #elif defined(__APPLE__)
-		bool added_window_exts = check_add_window_ext ("VK_KHR_metal_surface");
+		bool added_window_exts = check_add_window_ext ("VK_EXT_metal_surface");
 #endif
 		if (!khr_surface_added || !added_window_exts)
 			return make_error_code (InstanceError::windowing_extensions_not_present);
@@ -694,7 +703,7 @@ detail::Result<Instance> InstanceBuilder::build () const {
 	VkInstanceCreateInfo instance_create_info = {};
 	instance_create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	detail::setup_pNext_chain (instance_create_info, pNext_chain);
-	instance_create_info.flags = info.flags;
+	instance_create_info.flags = instance_flags;
 	instance_create_info.pApplicationInfo = &app_info;
 	instance_create_info.enabledExtensionCount = static_cast<uint32_t> (extensions.size ());
 	instance_create_info.ppEnabledExtensionNames = extensions.data ();
@@ -1351,6 +1360,11 @@ detail::Result<Device> DeviceBuilder::build () const {
 	std::vector<const char*> extensions = info.extensions_to_enable;
 	if (info.surface != VK_NULL_HANDLE || info.defer_surface_initialization)
 		extensions.push_back ({ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
+
+	// On macOS, automatically require portability subset extension
+#if defined(__APPLE__)
+	extensions.push_back ("VK_KHR_portability_subset");
+#endif
 
 	// VUID-VkDeviceCreateInfo-pNext-00373 - don't add pEnabledFeatures if the phys_dev_features_2 is present
 	bool has_phys_dev_features_2 = false;

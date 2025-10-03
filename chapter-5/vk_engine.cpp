@@ -539,19 +539,19 @@ void VulkanEngine::init_sync_structures()
 void VulkanEngine::init_pipelines()
 {
 	VkShaderModule colorMeshShader;
-	if (!load_shader_module("../../shaders/default_lit.frag.spv", &colorMeshShader))
+	if (!load_shader_module("shaders/default_lit.frag.spv", &colorMeshShader))
 	{
 		std::cout << "Error when building the colored mesh shader" << std::endl;
 	}
 
 	VkShaderModule texturedMeshShader;
-	if (!load_shader_module("../../shaders/textured_lit.frag.spv", &texturedMeshShader))
+	if (!load_shader_module("shaders/textured_lit.frag.spv", &texturedMeshShader))
 	{
 		std::cout << "Error when building the colored mesh shader" << std::endl;
 	}
 
 	VkShaderModule meshVertShader;
-	if (!load_shader_module("../../shaders/tri_mesh_ssbo.vert.spv", &meshVertShader))
+	if (!load_shader_module("shaders/tri_mesh_ssbo.vert.spv", &meshVertShader))
 	{
 		std::cout << "Error when building the mesh vertex shader module" << std::endl;
 	}
@@ -798,10 +798,10 @@ void VulkanEngine::load_meshes()
 
 	//load the monkey
 	Mesh monkeyMesh{};
-	monkeyMesh.load_from_obj("../../assets/monkey_smooth.obj");
+	monkeyMesh.load_from_obj("assets/monkey_smooth.obj");
 
 	Mesh lostEmpire{};
-	lostEmpire.load_from_obj("../../assets/lost_empire.obj");
+	lostEmpire.load_from_obj("assets/lost_empire.obj");
 
 	upload_mesh(triMesh);
 	upload_mesh(monkeyMesh);
@@ -817,7 +817,7 @@ void VulkanEngine::load_images()
 {
 	Texture lostEmpire;
 	
-	vkutil::load_image_from_file(*this, "../../assets/lost_empire-RGBA.png", lostEmpire.image);
+	vkutil::load_image_from_file(*this, "assets/lost_empire-RGBA.png", lostEmpire.image);
 	
 	VkImageViewCreateInfo imageinfo = vkinit::imageview_create_info(VK_FORMAT_R8G8B8A8_SRGB, lostEmpire.image._image, VK_IMAGE_ASPECT_COLOR_BIT);
 	vkCreateImageView(_device, &imageinfo, nullptr, &lostEmpire.imageView);

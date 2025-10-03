@@ -35,7 +35,7 @@ VertexInputDescription Vertex::get_vertex_description()
 	colorAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
 	colorAttribute.offset = offsetof(Vertex, color);
 
-	//UV will be stored at Location 2
+	//UV will be stored at Location 3
 	VkVertexInputAttributeDescription uvAttribute = {};
 	uvAttribute.binding = 0;
 	uvAttribute.location = 3;
@@ -65,7 +65,7 @@ bool Mesh::load_from_obj(const char* filename)
 
 	//load the OBJ file
 	tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename,
-		nullptr);
+		"assets/");
 	//make sure to output the warnings to the console, in case there are issues with the file
 	if (!warn.empty()) {
 		std::cout << "WARN: " << warn << std::endl;
