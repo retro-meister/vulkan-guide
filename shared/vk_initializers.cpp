@@ -1,4 +1,6 @@
 ﻿#include <vk_initializers.h>
+#include <fstream>
+#include <vector>
 
 //> init_cmd
 VkCommandPoolCreateInfo vkinit::command_pool_create_info(uint32_t queueFamilyIndex,
@@ -334,4 +336,48 @@ VkPipelineShaderStageCreateInfo vkinit::pipeline_shader_stage_create_info(VkShad
     // the entry point of the shader
     info.pName = entry;
     return info;
+}
+
+// Cross-platform shader path utility
+std::string vkinit::get_shader_path(const std::string& shaderName) {
+    // Try different path combinations based on platform and working directory
+    std::vector<std::string> possiblePaths = {
+        "shaders/" + shaderName,           // macOS/Linux when run from project root
+        "../../shaders/" + shaderName,     // Windows or when run from build directory
+        "../shaders/" + shaderName,        // Alternative path
+    };
+    
+    // Check if file exists for each possible path
+    for (const auto& path : possiblePaths) {
+        std::ifstream file(path);
+        if (file.good()) {
+            file.close();
+            return path;
+        }
+    }
+    
+    // If none found, return the default path (shaders/ for macOS/Linux)
+    return "shaders/" + shaderName;
+}
+
+// Cross-platform asset path utility
+std::string vkinit::get_asset_path(const std::string& assetName) {
+    // Try different path combinations based on platform and working directory
+    std::vector<std::string> possiblePaths = {
+        "assets/" + assetName,              // macOS/Linux when run from project root
+        "../../assets/" + assetName,        // Windows or when run from build directory
+        "../assets/" + assetName,           // Alternative path
+    };
+    
+    // Check if file exists for each possible path
+    for (const auto& path : possiblePaths) {
+        std::ifstream file(path);
+        if (file.good()) {
+            file.close();
+            return path;
+        }
+    }
+    
+    // If none found, return the default path (assets/ for macOS/Linux)
+    return "assets/" + assetName;
 }

@@ -732,7 +732,7 @@ VK_CHECK(vkCreatePipelineLayout(_device, &computeLayout, nullptr, &_gradientPipe
 #if CHAPTER_STAGE < 2
 //> comp_pipeline_2
 	VkShaderModule computeDrawShader;
-	if (!vkutil::load_shader_module("../../shaders/gradient.comp.spv", _device, &computeDrawShader))
+	if (!vkutil::load_shader_module(vkinit::get_shader_path("gradient.comp.spv").c_str(), _device, &computeDrawShader))
 	{
 		fmt::print("Error when building the compute shader \n");
 	}
@@ -764,7 +764,7 @@ VK_CHECK(vkCreatePipelineLayout(_device, &computeLayout, nullptr, &_gradientPipe
 
 #elif CHAPTER_STAGE == 2
 VkShaderModule computeDrawShader;
-if (!vkutil::load_shader_module("../../shaders/gradient_color.comp.spv", _device, &computeDrawShader)) {
+if (!vkutil::load_shader_module(vkinit::get_shader_path("gradient_color.comp.spv").c_str(), _device, &computeDrawShader)) {
 	fmt::print("Error when building the compute shader \n");
 }
 
@@ -792,12 +792,12 @@ _mainDeletionQueue.push_function([&]() {
 #else
 //> comp_pipeline_multi
 VkShaderModule gradientShader;
-if (!vkutil::load_shader_module("../../shaders/gradient_color.comp.spv", _device, &gradientShader)) {
+if (!vkutil::load_shader_module(vkinit::get_shader_path("gradient_color.comp.spv").c_str(), _device, &gradientShader)) {
 	fmt::print("Error when building the compute shader \n");
 }
 
 VkShaderModule skyShader;
-if (!vkutil::load_shader_module("../../shaders/sky.comp.spv", _device, &skyShader)) {
+if (!vkutil::load_shader_module(vkinit::get_shader_path("sky.comp.spv").c_str(), _device, &skyShader)) {
 	fmt::print("Error when building the compute shader \n");
 }
 

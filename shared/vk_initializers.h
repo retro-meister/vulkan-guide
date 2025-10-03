@@ -49,4 +49,10 @@ VkPipelineLayoutCreateInfo pipeline_layout_create_info();
 VkPipelineShaderStageCreateInfo pipeline_shader_stage_create_info(VkShaderStageFlagBits stage,
     VkShaderModule shaderModule,
     const char * entry = "main");
+
+// Cross-platform shader path utility
+std::string get_shader_path(const std::string& shaderName);
+
+// Cross-platform asset path utility
+std::string get_asset_path(const std::string& assetName);
 } // namespace vkinit
