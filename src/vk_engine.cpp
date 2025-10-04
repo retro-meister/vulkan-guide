@@ -222,7 +222,7 @@ void VulkanEngine::draw()
     VK_CHECK(vkEndCommandBuffer(cmd));
 
     //prepare the submission to the queue. 
-	//we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
+	//we want to wait on the _swapchainSemaphore, as that semaphore is signaled when the swapchain is ready
 	//we will signal the _renderSemaphore, to signal that rendering has finished
 
 	VkCommandBufferSubmitInfo cmdinfo = vkinit::command_buffer_submit_info(cmd);	
