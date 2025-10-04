@@ -5,17 +5,17 @@
 // VkImageLayout describes the current format.
 // When using draw commands we need the ImageLayout in a writeable format, and when outputting to swapchain we need another format.
 // Here we are using the synchronization2 extension from Vulkan 1.3
+
+// A barrier basically says the following:
+// - For all commands that come *after* the barrier, you are free to execute until you get to the specified dst stage.
+// - Once you reach that stage, you must wait until all the commands *before* the barrier have finished the src stage.
 void vkutil::transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout) {
     VkImageMemoryBarrier2 imageBarrier {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
         .pNext = nullptr,
-        // Wait for ALL previous pipeline stages to finish
         .srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
-        // Wait for all memory writes to complete and be visible
         .srcAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT,
-        // Block ALL subsequent pipeline stages until the barrier completes
         .dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
-        // Ensure subsequent reads/writes see the completed writes
         .dstAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
         .oldLayout = currentLayout,
         .newLayout = newLayout,
