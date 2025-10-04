@@ -228,6 +228,7 @@ void VulkanEngine::draw()
 	VkCommandBufferSubmitInfo cmdinfo = vkinit::command_buffer_submit_info(cmd);	
 	
     // Block specifically the COLOR_ATTACHMENT_OUTPUT pipeline stage until _swapchainSemaphore is signaled
+    // All pipeline stages before COLOR_ATTACHMENT_OUTPUT will not be blocked
 	VkSemaphoreSubmitInfo waitInfo = vkinit::semaphore_submit_info(VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR, get_current_frame()._swapchainSemaphore);
     // Signal _renderSemaphore when all graphics pipeline stages have finished within the graphics queue
 	VkSemaphoreSubmitInfo signalInfo = vkinit::semaphore_submit_info(VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT, get_current_frame()._renderSemaphore);	
