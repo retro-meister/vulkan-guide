@@ -9,9 +9,13 @@ void vkutil::transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout 
     VkImageMemoryBarrier2 imageBarrier {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
         .pNext = nullptr,
+        // Wait for ALL previous pipeline stages to finish
         .srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+        // Wait for all memory writes to complete and be visible
         .srcAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT,
+        // Block ALL subsequent pipeline stages until the barrier completes
         .dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+        // Ensure subsequent reads/writes see the completed writes
         .dstAccessMask = VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT,
         .oldLayout = currentLayout,
         .newLayout = newLayout,
