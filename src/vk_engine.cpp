@@ -236,7 +236,7 @@ void VulkanEngine::draw()
 
 	// submit command buffer to the queue and execute it.
     // waits for _swapchainSemaphore to be signaled before starting
-    // signals _renderSemaphore when the commands finish executing
+    // signals _renderSemaphore when all graphics pipeline stages finished
     // signals _renderFence when the commands finish executing
 	VK_CHECK(vkQueueSubmit2(_graphicsQueue, 1, &submit, get_current_frame()._renderFence));
 
