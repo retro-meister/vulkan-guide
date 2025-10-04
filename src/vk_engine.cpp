@@ -227,7 +227,9 @@ void VulkanEngine::draw()
 
 	VkCommandBufferSubmitInfo cmdinfo = vkinit::command_buffer_submit_info(cmd);	
 	
+    // Wait for _swapchainSemaphore to be signaled before starting the commands submitted via vkQueueSubmit2
 	VkSemaphoreSubmitInfo waitInfo = vkinit::semaphore_submit_info(VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR, get_current_frame()._swapchainSemaphore);
+    // Signal _renderSemaphore when the commands submitted via vkQueueSubmit2 have finished executing
 	VkSemaphoreSubmitInfo signalInfo = vkinit::semaphore_submit_info(VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT, get_current_frame()._renderSemaphore);	
 	 
 	VkSubmitInfo2 submit = vkinit::submit_info(&cmdinfo,&signalInfo,&waitInfo);	
@@ -246,6 +248,7 @@ void VulkanEngine::draw()
 	presentInfo.pSwapchains = &_swapchain;
 	presentInfo.swapchainCount = 1;
 
+    // Wait for _renderSemaphore to be signaled before presenting the image
 	presentInfo.pWaitSemaphores = &get_current_frame()._renderSemaphore;
 	presentInfo.waitSemaphoreCount = 1;
 
